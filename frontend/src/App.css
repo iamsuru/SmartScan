@@ -1,0 +1,54 @@
+/* AppBar.jsx */
+
+.nav-brand-logo {
+  font-family: "Rubik Doodle Shadow", system-ui;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 30px;
+}
+
+.nav-bg {
+  background-color: #68b5dbe3 !important;
+  color: #fff !important;
+}
+
+@media (max-width: 100px) {
+  .nav-bg {
+    background-color: #68b4db !important;
+  }
+}
+
+.nav-nav-link {
+  font-family: "Rubik", sans-serif;
+  font-size: 16px;
+  text-decoration: none;
+  color: #000;
+}
+
+/* Login.jsx */
+
+.parent-container {
+  height: 85vh;
+}
+
+.form-container {
+  background-color: #68b5db67;
+  padding: 70px 40px;
+  border-radius: 3px;
+}
+
+.input-field {
+  background: white !important;
+  border-radius: 1px !important;
+}
+
+#previewDocument {
+  -ms-zoom: 0.75;
+  border-radius: 3px;
+}
+
+@media (max-width: 500px) {
+  #previewDocument {
+    -ms-zoom: 1;
+  }
+}
