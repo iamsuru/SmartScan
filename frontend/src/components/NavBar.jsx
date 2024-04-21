@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { NavItem, NavbarBrand } from 'reactstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { useToast } from '@chakra-ui/react'
 import { useUser } from '../context/UserContext'
 const NavBar = () => {
 
     const navigate = useNavigate()
 
     const [token, setToken] = useState();
+    const toast = useToast()
 
     const { setLoadingForLogout } = useUser()
 
@@ -23,8 +25,16 @@ const NavBar = () => {
         localStorage.removeItem('currentUserToken')
         localStorage.removeItem('currentUser')
         setTimeout(() => {
+            setLoadingForLogout(false)
+            toast({
+                title: 'Logout Successfully',
+                status: 'success',
+                duration: "2000",
+                isClosable: false,
+                position: 'top'
+            })
             navigate('/')
-        }, 10000)
+        }, 3000)
 
     }
     return (
