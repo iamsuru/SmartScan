@@ -24,7 +24,7 @@ const NavBar = () => {
         localStorage.removeItem('currentUser')
         setTimeout(() => {
             navigate('/')
-        }, 2000)
+        }, 10000)
 
     }
     return (

@@ -124,7 +124,7 @@ const MobileUploader = () => {
     }
 
     const content = {
-        width: '350px',
+        width: '300px',
         height: '200px',
         textAlign: 'center',
         padding: '20px',
@@ -135,7 +135,7 @@ const MobileUploader = () => {
 
 
     return (
-        <div className='d-flex justify-content-center align-items-center' style={{ height: "100vh" }}>
+        <div className='d-flex justify-content-center align-items-center' style={{ height: "95vh" }}>
             <Form style={content} className='p-4' onSubmit={uploadToServer}>
                 <FormLabel className='text-center mb-4'>Upload Document</FormLabel>
                 <Input type='file' size='sm' onChange={handleFileInput} />
