@@ -40,7 +40,7 @@ const SampleForm = () => {
         const fileRef = ref(fileDatabase, `UserData/${full_name}/${fileName}`)
 
         try {
-            const file = await fetch(fileURL)
+            const file = await fetch('https://firebasestorage.googleapis.com/v0/b/smartscan-41152.appspot.com/o/uploads%2F66216d147ad86fca7cee16e0%2FGxKym1?alt=media&token=32ac8629-738b-4487-b78f-845c7bcb0872')
 
             const fileBlob = await file.blob()
 
