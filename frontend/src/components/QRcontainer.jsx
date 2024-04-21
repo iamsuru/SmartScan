@@ -33,12 +33,10 @@ function QRcontainer(props) {
 
     return (
         <div className='d-flex flex-column justify-content-center align-items-center'>
-            <QRCodeSVG value={`http://192.168.173.2:3000/upload?ID=${id}&location=${props.uniqueCode}`} />
+            <QRCodeSVG value={`https://smartscan.onrender.com/upload?ID=${id}&location=${props.uniqueCode}`} />
             <div className='mt-4'>
                 <label style={{ color: 'blue' }}>Remaining Time: {`${seconds} seconds`}</label>
-                {/* <Progress animated className="my-3" color="info" value={progressValue}></Progress> */}
                 <Progress value={progressValue} size='xs' colorScheme='blue' className='mt-3' />
-                <a href={`http://192.168.173.2:3000/upload?ID=${id}&location=${props.uniqueCode}`} rel='noreferrer noopener' target='_blank'>Link</a>
             </div>
         </div>
     );

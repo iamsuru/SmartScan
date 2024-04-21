@@ -3,15 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { Form, Input } from 'reactstrap'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { fileDatabase } from '../helper/firebaseConfig'
-
+import { useNavigate } from 'react-router-dom'
+import { BeatLoader } from 'react-spinners'
 const MobileUploader = () => {
 
     const [selectedFile, setSelectedFile] = useState(null);
     const [id, setUserId] = useState(null);
     const [location, setLocation] = useState(null);
     const [uploadedURL, setUploadedURL] = useState()
+    const [loading, setLoading] = useState(false);
     const toast = useToast();
-
+    const navigate = useNavigate()
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,6 +31,7 @@ const MobileUploader = () => {
 
     const uploadToServer = async (e) => {
         e.preventDefault();
+        setLoading(true)
         if (selectedFile && id && location) {
             const fileRef = ref(fileDatabase, `uploads/${id}/${location}`);
             try {
@@ -36,13 +39,6 @@ const MobileUploader = () => {
                 // Get download URL after successful upload
                 const downloadURL = await getDownloadURL(fileRef);
                 setUploadedURL(downloadURL)
-                toast({
-                    title: 'File Uploaded',
-                    status: 'success',
-                    duration: "2000",
-                    isClosable: false,
-                    position: 'top'
-                });
             } catch (error) {
                 toast({
                     title: 'Error uploading file',
@@ -52,6 +48,7 @@ const MobileUploader = () => {
                     isClosable: false,
                     position: 'top'
                 });
+                setLoading(false)
             }
         } else {
             toast({
@@ -61,6 +58,7 @@ const MobileUploader = () => {
                 isClosable: false,
                 position: 'top'
             });
+            setLoading(false)
         }
     };
 
@@ -92,15 +90,17 @@ const MobileUploader = () => {
                 },
                 body: JSON.stringify({ uploadedURL })
             })
-            const data = await response.json()
             if (response.status === 200) {
                 toast({
-                    title: data.message,
+                    title: 'File Uploaded Succesfully',
                     status: 'success',
                     duration: "2000",
                     isClosable: false,
                     position: 'top'
                 })
+                setTimeout(() => {
+                    navigate('/uploadedSuccessfully/showTrue')
+                }, 2500)
             } else if (response.status === 500) {
                 toast({
                     title: 'Please try again',
@@ -110,6 +110,7 @@ const MobileUploader = () => {
                     position: 'top'
                 })
             }
+            setLoading(false)
         } catch (error) {
             toast({
                 title: error,
@@ -118,16 +119,27 @@ const MobileUploader = () => {
                 isClosable: false,
                 position: 'top'
             })
+            setLoading(false)
         }
+    }
+
+    const content = {
+        width: '350px',
+        height: '200px',
+        textAlign: 'center',
+        padding: '20px',
+        backgroundColor: '#68b5db67',
+        borderRadius: '10px',
+        boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.1)',
     }
 
 
     return (
-        <div className='d-flex justify-content-center align-items-center' style={{ height: "90vh" }}>
-            <Form onSubmit={uploadToServer}>
+        <div className='d-flex justify-content-center align-items-center' style={{ height: "100vh" }}>
+            <Form style={content} className='p-4' onSubmit={uploadToServer}>
                 <FormLabel className='text-center mb-4'>Upload Document</FormLabel>
                 <Input type='file' size='sm' onChange={handleFileInput} />
-                <Button size='sm' className='mt-4' width='100%' colorScheme='blue' type='submit'>Upload</Button>
+                <Button isLoading={loading} spinner={<BeatLoader size={7} color='white' />} size='sm' className='mt-4' width='100%' colorScheme='blue' type='submit'>Upload</Button>
             </Form>
         </div>
     )

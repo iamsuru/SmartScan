@@ -1,8 +1,7 @@
-// fetchURL.jsx
 const fetchURL = async (callback) => {
     let finalURL;
     let seconds = 89;
-    var intervalId = setInterval(async () => {
+    let intervalId = setInterval(async () => {
         if (seconds === 0) {
             clearInterval(intervalId);
         } else {
@@ -20,11 +19,11 @@ const fetchURL = async (callback) => {
                 if (response.status === 200) {
                     clearInterval(intervalId);
                     finalURL = data.uploadedURL;
-                    // Reset the uploadedURL value to avoid reusing the same URL
                     data.uploadedURL = '';
+                    const previewDiv = document.getElementById('previewDiv')
+                    previewDiv.style.height = '550px'
+                    previewDiv.style.width = '600px'
                     document.getElementById('previewDocument').src = finalURL;
-
-                    // Call the callback function with the finalURL as an argument
                     if (callback) {
                         callback(finalURL);
                     }
@@ -36,6 +35,7 @@ const fetchURL = async (callback) => {
             }
         }
     }, 1000);
+    return intervalId
 };
 
-export default fetchURL;
+export { fetchURL };

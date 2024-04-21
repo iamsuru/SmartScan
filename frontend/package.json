@@ -1,6 +1,6 @@
 {
   "name": "smartscan-frontend",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "proxy": "http://localhost:2000",
   "private": true,
   "dependencies": {
@@ -13,12 +13,14 @@
     "bootstrap": "^5.3.3",
     "firebase": "^10.11.0",
     "framer-motion": "^11.1.5",
+    "jquery": "^3.7.1",
     "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-pdf": "^7.7.1",
     "react-router-dom": "^6.22.3",
     "react-scripts": "5.0.1",
+    "react-spinners": "^0.13.8",
     "reactstrap": "^9.2.2",
     "web-vitals": "^2.1.4"
   },

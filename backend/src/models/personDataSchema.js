@@ -12,6 +12,14 @@ const userDataSchema = new mongoose.Schema({
     DOB: {
         type: Date,
         required: true,
+        set: function (date) {
+            if (date) {
+                const newDate = new Date(date);
+                newDate.setHours(0, 0, 0, 0);
+                return newDate;
+            }
+            return date;
+        }
     },
     gender: {
         type: String,

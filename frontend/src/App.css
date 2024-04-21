@@ -52,3 +52,26 @@
     -ms-zoom: 1;
   }
 }
+
+/* NavBar.jsx */
+
+.nav-nav-link {
+  color: white !important;
+  font-weight: bold;
+}
+
+.nav-nav-link:hover {
+  color: #0b5ed7 !important;
+}
+
+#fullScreenLoader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.273) !important;
+  top: 0;
+  z-index: 1000;
+}

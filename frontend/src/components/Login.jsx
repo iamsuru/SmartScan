@@ -4,14 +4,16 @@ import {
     FormLabel,
     Input,
     Button,
+    FormControl,
 } from '@chakra-ui/react'
 import { Form } from 'reactstrap'
 import { useNavigate } from 'react-router-dom'
+import { BeatLoader } from 'react-spinners';
 const Login = () => {
 
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
-
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const toast = useToast()
 
@@ -25,6 +27,7 @@ const Login = () => {
 
     const authenticate = async (e) => {
         e.preventDefault()
+        setLoading(true)
         try {
             const response = await fetch('/api/auth/login', {
                 method: "POST",
@@ -86,6 +89,7 @@ const Login = () => {
                     position: 'top'
                 })
             }
+            setLoading(false)
         } catch (error) {
             toast({
                 title: error,
@@ -94,23 +98,24 @@ const Login = () => {
                 isClosable: false,
                 position: 'top'
             })
+            setLoading(false)
         }
     }
     return (
         <div className='d-flex justify-content-center align-items-center parent-container container'>
             <div className='form-container'>
                 <Form onSubmit={authenticate}>
-                    <div className='mb-2'>
+                    <FormControl isRequired className='mb-2'>
                         <FormLabel fontSize={14}>Email address</FormLabel>
-                        <Input className='input-field' type='email' onChange={(e) => setEmail(e.target.value)} />
-                    </div>
-                    <div className='mt-2 mb-2'>
+                        <Input autoComplete='off' className='input-field' type='email' onChange={(e) => setEmail(e.target.value)} />
+                    </FormControl>
+                    <FormControl isRequired className='mt-2 mb-2'>
                         <FormLabel fontSize={14}>Password</FormLabel>
                         <Input className='input-field' type='password'
                             onChange={(e) => setPassword(e.target.value)} />
-                    </div>
+                    </FormControl>
                     <div className='mt-4'>
-                        <Button width='100%' background='#4990e7' color='white' _hover={{ background: '#0b5ed7' }} type='submit'>Let me in!</Button>
+                        <Button isLoading={loading} spinner={<BeatLoader size={7} color='white' />} width='100%' background='#4990e7' color='white' _hover={{ background: '#0b5ed7' }} type='submit'>Let me in!</Button>
                     </div>
                 </Form>
             </div>

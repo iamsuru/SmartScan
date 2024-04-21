@@ -1,16 +1,20 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState } from "react";
 
-const DetailContext = createContext()
+
+const DetailContext = createContext();
 
 const UserProvider = ({ children }) => {
-    const [fileUrl, setFileURL] = useState()
+    const [loadingForLogout, setLoadingForLogout] = useState(false);
+    const [token, setToken] = useState()
+
+
     return (
-        <DetailContext.Provider value={{ fileUrl, setFileURL }}>
+        <DetailContext.Provider value={{ loadingForLogout, setLoadingForLogout, token, setToken }}>
             {children}
         </DetailContext.Provider>
-    )
-}
+    );
+};
 
-export const UserState = () => { return useContext(DetailContext) }
+export const useUser = () => useContext(DetailContext);
 
-export default UserProvider
+export default UserProvider;

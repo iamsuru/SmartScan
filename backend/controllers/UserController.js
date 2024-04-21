@@ -3,6 +3,8 @@ const Auth = require('../src/models/registerSchema')
 const bcrypt = require('bcrypt')
 const fs = require('fs').promises
 const path = require('path')
+const jwt = require('jsonwebtoken')
+let token;
 const Register = async (req, res) => {
     const { name, email_id, password } = req.body
     bcrypt.hash(password, 10, (err, hash) => {
@@ -44,14 +46,37 @@ const Login = async (req, res) => {
         }
         const { password: _, ...authWithoutPassword } = auth.toObject();
         // await fs.mkdir(path.join(__dirname, '..', '..', 'frontend', 'src', 'Uploads', `${auth._id}`))
+        token = generateToken(auth._id)
         res.status(200).json({
-            message: 'Authentication successful', auth: authWithoutPassword, token: generateToken(auth._id)
+            message: 'Authentication successful', auth: authWithoutPassword, token: token
         });
     } catch (err) {
         return res.status(500).json({ message: `Internal Server Error ${err}` });
     }
 };
 
+const isTokenExpired = async (req, res) => {
+    const { token } = req.body
+
+    try {
+        const decodedToken = jwt.decode(token, { complete: true });
+
+        if (decodedToken.payload.exp) {
+            const expirationTime = decodedToken.payload.exp
+
+            const currentTime = Math.floor(Date.now() / 1000);
+
+            if (expirationTime < currentTime) {
+                return res.status(410).json({ message: 'Expired' })
+            } else {
+                return res.status(200).json({ message: 'Not expired' })
+            }
+        }
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}
 
 
-module.exports = { Register, Login }
+
+module.exports = { Register, Login, isTokenExpired }

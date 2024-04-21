@@ -2,22 +2,30 @@ import React, { useState } from 'react'
 import { NavItem, NavbarBrand } from 'reactstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-
+import { useUser } from '../context/UserContext'
 const NavBar = () => {
 
     const navigate = useNavigate()
 
     const [token, setToken] = useState();
 
+    const { setLoadingForLogout } = useUser()
+
     useEffect(() => {
         const tokenFromLocalStorage = JSON.parse(localStorage.getItem('currentUserToken'));
         setToken(tokenFromLocalStorage);
     }, [navigate]);
 
+
+
     const logoutHandler = () => {
+        setLoadingForLogout(true)
         localStorage.removeItem('currentUserToken')
         localStorage.removeItem('currentUser')
-        navigate('/')
+        setTimeout(() => {
+            navigate('/')
+        }, 2000)
+
     }
     return (
         <nav className="navbar navbar-expand-sm nav-bg">

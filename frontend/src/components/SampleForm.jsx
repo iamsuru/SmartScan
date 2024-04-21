@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { FormLabel, Input, Button, RadioGroup, Stack, Radio, useDisclosure, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, ModalFooter, ModalHeader, useToast } from '@chakra-ui/react';
+import { FormLabel, Input, Button, RadioGroup, Stack, Radio, useDisclosure, Modal, ModalOverlay, ModalContent, ModalCloseButton, ModalBody, ModalFooter, ModalHeader, useToast, FormControl } from '@chakra-ui/react';
 import { Form } from 'reactstrap';
 import QRcontainer from './QRcontainer';
 import OptionChooser from './OptionChooser';
-import fetchURL from '../scripts/fetchURL';
-
-import { ref, uploadBytes } from 'firebase/storage'
+import { fetchURL } from '../scripts/fetchURL';
+import { BeatLoader } from 'react-spinners'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { fileDatabase } from '../helper/firebaseConfig'
 import fileNameGenerator from '../scripts/fileNameGenerator';
+import { useNavigate } from 'react-router-dom';
 
 const SampleForm = () => {
     const [full_name, setFullName] = useState();
@@ -15,46 +16,122 @@ const SampleForm = () => {
     const [DOB, setDOB] = useState();
     const [gender, setGender] = useState();
     const [fileURL, setFileURL] = useState()
-    const [fileName, setFileName] = useState()
+
+    const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
+    const navigate = useNavigate()
 
 
     const handleFormSubmit = async (e) => {
         e.preventDefault()
+        setLoading(true)
 
-        const generatedName = fileNameGenerator(full_name)
-        setFileName(generatedName)
-        // if (!fileURL) {
-        //     toast({
-        //         title: 'No file found to upload',
-        //         status: 'error',
-        //         duration: "2000",
-        //         isClosable: false,
-        //         position: 'top'
-        //     });
-        //     return
-        // }
+        const fileName = fileNameGenerator(full_name)
+
+        if (!fileURL) {
+            toast({
+                title: 'No file found to upload',
+                status: 'error',
+                duration: "2000",
+                isClosable: false,
+                position: 'top'
+            });
+            return
+        }
 
         const fileRef = ref(fileDatabase, `UserData/${full_name}/${fileName}`)
 
         try {
-            const file = await fetch('https://firebasestorage.googleapis.com/v0/b/smartscan-41152.appspot.com/o/uploads%2F66216d147ad86fca7cee16e0%2FGxKym1?alt=media&token=32ac8629-738b-4487-b78f-845c7bcb0872')
-
+            const file = await fetch(fileURL)
             const fileBlob = await file.blob()
 
             await uploadBytes(fileRef, fileBlob)
-                .then((snapshot) => {
+                .then(async (snapshot) => {
+                    const destinationPath = await getDownloadURL(fileRef)
+                    try {
+                        const response = await fetch('/api/uploadUserData', {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                full_name,
+                                email,
+                                DOB,
+                                gender,
+                                fileName,
+                                destinationPath
+                            })
+                        })
+
+                        const data = await response.json()
+
+                        if (response.status === 201) {
+                            toast({
+                                title: data.message,
+                                status: 'success',
+                                duration: "2000",
+                                isClosable: false,
+                                position: 'top'
+                            })
+                            setTimeout(() => {
+                                navigate('/uploadedSuccessfully/show')
+                            }, 2000)
+                        }
+                        else if (response.status === 400) {
+                            toast({
+                                title: data.message,
+                                status: 'error',
+                                duration: "2000",
+                                isClosable: false,
+                                position: 'top'
+                            })
+                        }
+                        else if (response.status === 500) {
+                            toast({
+                                title: data.message,
+                                status: 'error',
+                                duration: "2000",
+                                isClosable: false,
+                                position: 'top'
+                            })
+                        }
+                        else {
+                            toast({
+                                title: data.message,
+                                status: 'error',
+                                duration: "2000",
+                                isClosable: false,
+                                position: 'top'
+                            })
+                        }
+                        setLoading(false)
+                    } catch (error) {
+                        toast({
+                            title: error,
+                            status: 'danger',
+                            duration: "2000",
+                            isClosable: false,
+                            position: 'top'
+                        })
+                        setLoading(false)
+                    }
+                })
+
+                .catch((error) => {
                     toast({
-                        title: 'File Uploaded',
-                        status: 'success',
+                        title: 'Error Uploading File',
+                        description: error.message, // Display the error message
+                        status: 'error',
                         duration: "2000",
                         isClosable: false,
                         position: 'top'
                     });
-                })
-
+                    setLoading(false)
+                });
         } catch (error) {
             toast({
                 title: 'Error uploading file',
@@ -64,19 +141,13 @@ const SampleForm = () => {
                 isClosable: false,
                 position: 'top'
             });
+            setLoading(false)
         }
 
     }
 
-    const downloadFileFromURL = async () => {
-        const response = await fetch('https://www.google.com/url?sa=i&url=https%3A%2F%2Fbuffer.com%2Flibrary%2Ffree-images%2F&psig=AOvVaw1ygQA7vDbOHR6uQeGZGiLr&ust=1713776711302000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCOCpkvb50oUDFQAAAAAdAAAAABAE');
-        const blob = await response.blob();
-        return blob;
-    }
-
 
     //ModalChooser.jsx
-
     const [showQRCode, setShowQRCode] = useState(false)
     const [uniqueCode, setUniqueCode] = useState('')
 
@@ -101,51 +172,76 @@ const SampleForm = () => {
             setShowQRCode(false);
             handleCancel();
             setFileURL(finalURL)
-        });
+        })
     };
 
 
     useEffect(() => {
+        let currentIntervalId;
+
         if (isOpen) {
             const uniqueCode = generateUniqueID()
             setUniqueCode(uniqueCode)
         }
-    }, [isOpen])
+
+        if (isOpen && !showQRCode) {
+            fetchURL((finalURL) => {
+                setFileURL(finalURL);
+                onClose();
+                setLoading2(false)
+            })
+                .then((id) => {
+                    currentIntervalId = id;
+                })
+                .catch((error) => {
+                    console.error('Error fetching URL:', error);
+                });
+        }
+        return () => {
+            if (currentIntervalId) {
+                clearInterval(currentIntervalId);
+            }
+        };
+    }, [isOpen, showQRCode]);
+
+
 
     return (
         <>
             <div style={{ width: '75%' }}>
-                <h3 className='mt-5'>Update KYC</h3>
+                <h3 className='mt-3'>Update KYC</h3>
                 <Form onSubmit={handleFormSubmit} className='mt-5'>
-                    <div className='mb-2'>
+                    <FormControl isRequired className='mb-2'>
                         <FormLabel fontSize={14}>Full Name</FormLabel>
-                        <Input className='input-field' type='name' onChange={(e) => setFullName(e.target.value)} />
-                    </div>
-                    <div className='mb-2 mt-3'>
+                        <Input autoComplete='off' className='input-field' type='name' required onChange={(e) => setFullName(e.target.value)} />
+                    </FormControl>
+                    <FormControl isRequired className='mb-2 mt-3'>
                         <FormLabel fontSize={14}>Email Address</FormLabel>
-                        <Input className='input-field' type='email' onChange={(e) => setEmail(e.target.value)} />
-                    </div>
-                    <div className='mb-2 mt-3'>
+                        <Input autoComplete='off' className='input-field' type='email' onChange={(e) => setEmail(e.target.value)} />
+                    </FormControl>
+                    <FormControl isRequired className='mb-2 mt-3'>
                         <FormLabel fontSize={14}>Date of Birth</FormLabel>
-                        <Input className='input-field' type='date' onChange={(e) => setDOB(e.target.value)} />
-                    </div>
+                        <Input autoComplete='off' className='input-field' type='date' onChange={(e) => setDOB(e.target.value)} />
+                    </FormControl>
                     <div className='mb-2 mt-3'>
-                        <FormLabel fontSize={14}>Gender</FormLabel>
-                        <RadioGroup onChange={setGender}>
-                            <Stack spacing={4} direction='row'>
-                                <Radio colorScheme='green' value='Male'>Male</Radio>
-                                <Radio colorScheme='green' value='Female'>Female</Radio>
-                                <Radio colorScheme='green' value='Other'>Other</Radio>
-                            </Stack>
-                        </RadioGroup>
+                        <FormControl isRequired>
+                            <FormLabel fontSize={14}>Gender</FormLabel>
+                            <RadioGroup onChange={setGender}>
+                                <Stack spacing={4} direction='row'>
+                                    <Radio colorScheme='linkedin' value='Male'>Male</Radio>
+                                    <Radio colorScheme='linkedin' value='Female'>Female</Radio>
+                                    <Radio colorScheme='linkedin' value='Other'>Other</Radio>
+                                </Stack>
+                            </RadioGroup>
+                        </FormControl>
                     </div>
-                    <div className='mb-2 mt-3'>
-                        <span className='me-5' style={{ fontWeight: "550" }}>Document</span>
+                    <FormControl isRequired className='mb-2 mt-3 d-flex justify-content-between align-items-center'>
+                        <FormLabel className='' style={{ fontWeight: "550" }}>Document</FormLabel>
                         <Button colorScheme='linkedin' size='xs' onClick={onOpen}>Upload Document</Button>
-                    </div>
+                    </FormControl>
 
                     <div className='mt-4'>
-                        <Button size='sm' background='#4990e7' color='white' _hover={{ background: '#0b5ed7' }} width='100%' type='submit'>Submit</Button>
+                        <Button isLoading={loading} spinner={<BeatLoader size={7} color='white' />} size='sm' background='#4990e7' color='white' _hover={{ background: '#0b5ed7' }} width='100%' type='submit'>Submit</Button>
                     </div>
                 </Form>
             </div>
@@ -153,19 +249,19 @@ const SampleForm = () => {
             <Modal isCentered closeOnOverlayClick={false} isOpen={isOpen} onClose={handleCancel}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader className='text-center'>Choose Option</ModalHeader>
+                    <ModalHeader textAlign='center'>Choose Option</ModalHeader>
                     <ModalCloseButton />
 
                     <ModalBody pb={6}>
                         {showQRCode ? (
                             <QRcontainer uniqueCode={uniqueCode} onTimerComplete={handleCancel} />
                         ) : (
-                            <OptionChooser handleShowQRCode={handleShowQRCode} />
+                            <OptionChooser uniqueCode={uniqueCode} handleShowQRCode={handleShowQRCode} setLoading2={setLoading2} />
                         )}
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme='blue' onClick={handleCancel}>Cancel</Button>
+                        <Button isLoading={loading2} spinner={<BeatLoader size={7} color='white' />} colorScheme='blue' onClick={handleCancel}>Cancel</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
