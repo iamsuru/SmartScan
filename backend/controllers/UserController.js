@@ -67,7 +67,7 @@ const isTokenExpired = async (req, res) => {
             const currentTime = Math.floor(Date.now() / 1000);
 
             if (expirationTime < currentTime) {
-                return res.status(410).json({ message: 'Expired' })
+                return res.status(410).json({ message: 'Session Expired' })
             } else {
                 return res.status(200).json({ message: 'Not expired' })
             }

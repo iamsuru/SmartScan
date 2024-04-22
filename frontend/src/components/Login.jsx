@@ -18,12 +18,46 @@ const Login = () => {
     const toast = useToast()
 
     useEffect(() => {
-        const token = JSON.parse(localStorage.getItem('currentUserToken'));
+        const isTokenExpired = async (token) => {
+            try {
+                const response = await fetch('/api/auth/isTokenExpired', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token }),
+                });
 
+                const data = await response.json()
+                if (response.status === 200) {
+                    navigate('/home-page')
+                }
+                else if (response.status === 410) {
+                    toast({
+                        title: data.message,
+                        status: 'error',
+                        duration: "3000",
+                        isClosable: false,
+                        position: 'top'
+                    })
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('currentUserToken');
+                    navigate('/');
+                } else if (response.status === 500) {
+                    console.log('Internal server error');
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        const token = JSON.parse(localStorage.getItem('currentUserToken'));
         if (token) {
-            navigate('/home-page')
+            isTokenExpired(token);
+        } else {
+            navigate('/');
         }
-    }, [navigate])
+    }, [navigate]);
 
     const authenticate = async (e) => {
         e.preventDefault()

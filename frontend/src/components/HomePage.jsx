@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import SampleForm from './SampleForm'
 import { useNavigate } from 'react-router-dom';
-import { Spinner } from '@chakra-ui/react';
+import { Spinner, useToast } from '@chakra-ui/react';
 import { useUser } from '../context/UserContext';
 const Preview = () => {
 
@@ -20,6 +20,7 @@ const Preview = () => {
 
 const HomePage = () => {
     const navigate = useNavigate()
+    const toast = useToast()
     const { loadingForLogout } = useUser()
     useEffect(() => {
         const isTokenExpired = async (token) => {
@@ -31,7 +32,16 @@ const HomePage = () => {
                     },
                     body: JSON.stringify({ token }),
                 });
+
+                const data = await response.json()
                 if (response.status === 410) {
+                    toast({
+                        title: data.message,
+                        status: 'error',
+                        duration: "3000",
+                        isClosable: false,
+                        position: 'top'
+                    })
                     localStorage.removeItem('currentUser');
                     localStorage.removeItem('currentUserToken');
                     navigate('/');
