@@ -202,6 +202,7 @@ const SampleForm = () => {
                 clearInterval(currentIntervalId);
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, showQRCode]);
 
 

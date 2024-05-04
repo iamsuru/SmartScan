@@ -19,6 +19,7 @@ function OptionChooser({ uniqueCode, handleShowQRCode, setLoading2 }) {
 
         const tmp = uniqueCode
         setLocation(tmp)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId])
 
     const handleFileInput = (e) => {
@@ -30,6 +31,7 @@ function OptionChooser({ uniqueCode, handleShowQRCode, setLoading2 }) {
         if (selectedFile) {
             preSendingFormality()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedFile]);
 
     const preSendingFormality = () => {

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
-import SampleForm from './SampleForm'
+import React, { useEffect, useCallback } from 'react';
+import SampleForm from './SampleForm';
 import { useNavigate } from 'react-router-dom';
 import { Spinner, useToast } from '@chakra-ui/react';
 import { useUser } from '../context/UserContext';
-const Preview = () => {
 
+const Preview = () => {
     return (
         <div id='previewDiv' style={{ height: '0', width: '0' }} className='mt-5'>
             <iframe
@@ -15,13 +15,24 @@ const Preview = () => {
                 width='100%'
             ></iframe>
         </div>
-    )
+    );
 }
 
 const HomePage = () => {
-    const navigate = useNavigate()
-    const toast = useToast()
-    const { loadingForLogout } = useUser()
+    const navigate = useNavigate();
+    const toast = useToast();
+    const { loadingForLogout } = useUser();
+
+    const showToast = useCallback((message, status, duration, isClosable, position) => {
+        toast({
+            title: message,
+            status: status,
+            duration: duration,
+            isClosable: isClosable,
+            position: position
+        });
+    }, [toast]);
+
     useEffect(() => {
         const isTokenExpired = async (token) => {
             try {
@@ -33,15 +44,9 @@ const HomePage = () => {
                     body: JSON.stringify({ token }),
                 });
 
-                const data = await response.json()
+                const data = await response.json();
                 if (response.status === 410) {
-                    toast({
-                        title: data.message,
-                        status: 'error',
-                        duration: "3000",
-                        isClosable: false,
-                        position: 'top'
-                    })
+                    showToast(data.message, 'error', 3000, false, 'top');
                     localStorage.removeItem('currentUser');
                     localStorage.removeItem('currentUserToken');
                     navigate('/');
@@ -59,7 +64,8 @@ const HomePage = () => {
         } else {
             navigate('/');
         }
-    }, [navigate]);
+    }, [showToast, navigate]);
+
     return (
         <>
             {loadingForLogout && <div id='fullScreenLoader'>
@@ -87,9 +93,7 @@ const HomePage = () => {
                 </div>
             </div>
         </>
-    )
+    );
 }
-
-
 
 export { HomePage };
