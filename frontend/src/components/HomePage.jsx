@@ -36,7 +36,7 @@ const HomePage = () => {
     useEffect(() => {
         const isTokenExpired = async (token) => {
             try {
-                const response = await fetch('/api/auth/isTokenExpired', {
+                const response = await fetch('https://smartscan-server.onrender.com/api/auth/isTokenExpired', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

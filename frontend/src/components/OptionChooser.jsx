@@ -78,7 +78,7 @@ function OptionChooser({ uniqueCode, handleShowQRCode, setLoading2 }) {
 
     const sendUploadedURL = async (uploadedURL) => {
         try {
-            const response = await fetch('/api/sendUploadedURL', {
+            const response = await fetch('https://smartscan-server.onrender.com/api/sendUploadedURL', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

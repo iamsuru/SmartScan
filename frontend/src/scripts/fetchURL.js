@@ -7,7 +7,7 @@ const fetchURL = async (callback) => {
         } else {
             seconds--;
             try {
-                const response = await fetch('/api/getUploadedURL', {
+                const response = await fetch('https://smartscan-server.onrender.com/api/getUploadedURL', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

@@ -52,7 +52,7 @@ const SampleForm = () => {
                 .then(async (snapshot) => {
                     const destinationPath = await getDownloadURL(fileRef)
                     try {
-                        const response = await fetch('/api/uploadUserData', {
+                        const response = await fetch('https://smartscan-server.onrender.com/api/uploadUserData', {
                             method: "POST",
                             headers: {
                                 'Content-Type': 'application/json',
