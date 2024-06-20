@@ -1,9 +1,3 @@
-const { ref, uploadBytes } = require('firebase/storage'); // Import the necessary Firebase Storage methods
-const fileDatabase = require('../src/db/firebaseConfig');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
 let uploadedURL = '';
 
 const getUploadedURL = (req, res) => {

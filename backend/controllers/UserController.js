@@ -1,8 +1,6 @@
 const { generateToken } = require('../src/helper/generateToken')
 const Auth = require('../src/models/registerSchema')
 const bcrypt = require('bcrypt')
-const fs = require('fs').promises
-const path = require('path')
 const jwt = require('jsonwebtoken')
 let token;
 const Register = async (req, res) => {
@@ -45,7 +43,6 @@ const Login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid Credentials' });
         }
         const { password: _, ...authWithoutPassword } = auth.toObject();
-        // await fs.mkdir(path.join(__dirname, '..', '..', 'frontend', 'src', 'Uploads', `${auth._id}`))
         token = generateToken(auth._id)
         res.status(200).json({
             message: 'Authentication successful', auth: authWithoutPassword, token: token

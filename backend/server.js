@@ -4,8 +4,6 @@ const AuthRouter = require('./routes/Route')
 const OtherRouter = require('./routes/OtherRoute')
 const path = require('path')
 
-require('./src/db/firebaseConfig')
-
 require('./src/db/config')
 
 require('dotenv').config()
