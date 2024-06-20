@@ -33,7 +33,7 @@ function QRcontainer(props) {
 
     return (
         <div className='d-flex flex-column justify-content-center align-items-center'>
-            <QRCodeSVG value={`https://smartscan-server.onrender.com/upload?ID=${id}&location=${props.uniqueCode}`} />
+            <QRCodeSVG value={`https://smartscan-web.netlify.app/upload?ID=${id}&location=${props.uniqueCode}`} />
             <div className='mt-4'>
                 <label style={{ color: 'blue' }}>Remaining Time: {`${seconds} seconds`}</label>
                 <Progress value={progressValue} size='xs' colorScheme='blue' className='mt-3' />
