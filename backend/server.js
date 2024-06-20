@@ -3,8 +3,15 @@ const app = express();
 const AuthRouter = require('./routes/Route')
 const OtherRouter = require('./routes/OtherRoute')
 const path = require('path')
+const cors = require('cors')
 
 require('./src/db/config')
+
+app.use(cors({
+    origin: 'https://smartscan-web.netlify.app',
+    methods: 'GET,PUT,POST',
+    allowedHeaders: '*'
+}))
 
 require('dotenv').config()
 app.use(express.json())
