@@ -15,17 +15,28 @@ const App = () => {
   };
 
   const hideNavBar = location.pathname.startsWith('/uploadedSuccessfully/showTrue');
-
+  const host = window.location.origin
   return (
     <div className='bg-img'>
-      {!hideNavBar && showNavigationBar() && <NavBar />}
-      <Routes>
-        <Route path='/' element={<Login />} />
-        <Route path='/signup' element={<RegistrationPage />} />
-        <Route path='/home-page' element={<HomePage />} />
-        <Route path='/upload' element={<MobileUploader />} />
-        <Route path='/uploadedSuccessfully/:popUp' element={<SuccessMessage />} />
-      </Routes>
+      {host === "https://smartscan-web.netlify.app" ? (
+        <>
+          {!hideNavBar && showNavigationBar() && <NavBar />}
+          <Routes>
+            <Route path='/' element={<Login />} />
+            <Route path='/signup' element={<RegistrationPage />} />
+            <Route path='/home-page' element={<HomePage />} />
+            <Route path='/upload' element={<MobileUploader />} />
+            <Route path='/uploadedSuccessfully/:popUp' element={<SuccessMessage />} />
+          </Routes>
+        </>
+      ) : (
+        <div className='d-flex flex-column justify-content-center align-items-center vh-100'>
+          <h2 className='fw-bolder'>This Service is deployed on</h2>
+          <h4 className='mb-4 fw-bold'>https://smartscan-web.netlify.app</h4>
+          <a href='https://smartscan-web.netlify.app' className='btn btn-primary' role='button'>I will take you there...</a>
+        </div>
+      )}
+
     </div>
   );
 };
