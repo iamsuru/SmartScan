@@ -7,6 +7,7 @@ import RegistrationPage from './components/RegistrationPage';
 import { HomePage } from './components/HomePage';
 import MobileUploader from './components/MobileUploader';
 import SuccessMessage from './components/SuccessMessage';
+import ServerChanged from './components/ServerChanged';
 
 const App = () => {
   const location = useLocation();
@@ -30,11 +31,7 @@ const App = () => {
           </Routes>
         </>
       ) : (
-        <div className='d-flex flex-column justify-content-center align-items-center vh-100'>
-          <h2 className='fw-bolder'>This Service is deployed on</h2>
-          <h4 className='mb-4 fw-bold'>https://smartscan-web.netlify.app</h4>
-          <a href='https://smartscan-web.netlify.app' className='btn btn-primary' role='button'>I will take you there...</a>
-        </div>
+        <ServerChanged />
       )}
 
     </div>
